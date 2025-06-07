@@ -1,0 +1,1478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Gamification Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 5px;
+            flex-wrap: wrap; /* Allow wrapping on smaller screens */
+        }
+
+        .nav-tab {
+            padding: 12px 24px;
+            margin: 5px; /* Adjust margin for wrapped items */
+            background: transparent;
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .nav-tab.active {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+
+        .nav-tab:hover {
+            background: rgba(255,255,255,0.15);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.95);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .stat-card.gold {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+        }
+
+        .stat-card.green {
+            background: linear-gradient(135deg, #00b894, #00a085);
+        }
+
+        .stat-card.purple {
+            background: linear-gradient(135deg, #a29bfe, #6c5ce7);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #00b894, #00a085);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 184, 148, 0.3);
+        }
+
+        .leaderboard {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+
+        .leaderboard-header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid #f0f0f0;
+            transition: all 0.3s ease;
+        }
+
+        .leaderboard-item:last-child {
+            border-bottom: none;
+        }
+
+        .leaderboard-item:hover {
+            background: #f8f9fa;
+            transform: translateX(5px);
+        }
+
+        .rank {
+            font-size: 1.5rem;
+            font-weight: bold;
+            width: 60px;
+            text-align: center;
+            margin-right: 20px;
+            flex-shrink: 0; /* Prevent shrinking */
+        }
+
+        .rank.gold { color: #f39c12; }
+        .rank.silver { color: #95a5a6; }
+        .rank.bronze { color: #d35400; }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+        }
+
+        .user-team {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        .user-points {
+            text-align: right;
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #667eea;
+            flex-shrink: 0; /* Prevent shrinking */
+            min-width: 80px; /* Give it some space */
+        }
+
+        .level-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-left: 10px;
+        }
+
+        /* Level badge colors */
+        .level-Bronze { background: #cd7f32; color: white; }
+        .level-Silver { background: #c0c0c0; color: #333; }
+        .level-Gold { background: #ffd700; color: #333; }
+        .level-Platinum { background: #e5e4e2; color: #333; }
+        .level-Diamond { background: #b9f2ff; color: #333; }
+
+        .activity-log {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .activity-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background 0.3s ease;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-item:hover {
+            background: #f8f9fa;
+        }
+
+        .activity-info {
+            flex: 1;
+            margin-right: 10px; /* Space between info and points */
+        }
+
+        .activity-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .activity-meta {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+
+        .activity-points {
+            font-weight: bold;
+            color: #00b894;
+            font-size: 1.1rem;
+            flex-shrink: 0; /* Prevent shrinking */
+        }
+
+        .achievement-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px; /* Added margin */
+        }
+
+        .achievement-card {
+            background: linear-gradient(135deg, #ffeaa7, #fdcb6e);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            color: #333; /* Ensure text is readable */
+        }
+
+        .achievement-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .achievement-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            color: #f39c12; /* Gold color for icon */
+        }
+
+        .achievement-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .achievement-desc {
+            font-size: 0.9rem;
+            opacity: 0.9; /* Increased opacity */
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            overflow: auto; /* Allow scrolling within modal */
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative; /* Needed for close button positioning */
+        }
+
+        .modal-header {
+            text-align: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 0;
+            right: 0;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #aaa;
+            line-height: 1; /* Adjust line height */
+        }
+
+        .close-btn:hover {
+            color: #000;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            z-index: 1001;
+            transform: translateX(400px);
+            transition: transform 0.3s ease-in-out;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            background: linear-gradient(135deg, #00b894, #00a085);
+        }
+
+        .notification.error {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+        }
+
+        .team-member-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background 0.3s ease;
+        }
+
+        .team-member-item:last-child {
+            border-bottom: none;
+        }
+
+        .team-member-item:hover {
+            background: #f8f9fa;
+        }
+
+        .member-info {
+            flex: 1;
+            margin-right: 10px; /* Space between info and stats */
+        }
+
+        .member-info h4 {
+            margin-bottom: 5px;
+            color: #333;
+            display: flex;
+            align-items: center;
+        }
+
+        .member-details {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        .member-stats {
+            text-align: right;
+            flex-shrink: 0; /* Prevent shrinking */
+            min-width: 80px; /* Give it some space */
+        }
+
+        .member-points {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        /* Add a placeholder style */
+        .placeholder-text {
+            text-align: center;
+            padding: 20px;
+            color: #7f8c8d;
+        }
+
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-tabs {
+                flex-wrap: wrap;
+            }
+
+            .nav-tab {
+                 margin: 5px; /* Adjusted margin */
+            }
+
+
+            .leaderboard-item {
+                flex-direction: column;
+                text-align: center;
+                align-items: stretch; /* Stretch items */
+            }
+
+            .rank {
+                margin-right: 0;
+                margin-bottom: 10px;
+                width: auto; /* Allow rank width to be determined by content */
+            }
+
+            .user-info {
+                margin-right: 0; /* Remove margin */
+                margin-bottom: 10px; /* Add margin below */
+            }
+
+             .user-name {
+                justify-content: center; /* Center name and badge */
+             }
+
+            .user-points {
+                text-align: center; /* Center points */
+                min-width: auto;
+            }
+
+            .activity-item {
+                flex-direction: column;
+                align-items: flex-start; /* Align items to the start */
+            }
+
+            .activity-info {
+                margin-right: 0;
+                margin-bottom: 10px;
+                width: 100%; /* Take full width */
+            }
+
+            .activity-points {
+                width: 100%; /* Take full width */
+                text-align: right; /* Keep points right-aligned */
+            }
+
+             .team-member-item {
+                flex-direction: column;
+                align-items: flex-start; /* Align items to the start */
+            }
+
+             .member-info {
+                margin-right: 0;
+                margin-bottom: 10px;
+                width: 100%; /* Take full width */
+             }
+
+             .member-info h4 {
+                 justify-content: center; /* Center name and badge */
+             }
+
+             .member-stats {
+                width: 100%; /* Take full width */
+                text-align: right; /* Keep stats right-aligned */
+                min-width: auto;
+             }
+
+             .level-badge {
+                 margin-left: 5px; /* Smaller margin */
+             }
+
+             .quick-actions button {
+                 width: 100%; /* Full width buttons */
+             }
+
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏆 Team Gamification Dashboard</h1>
+            <p>Track achievements, celebrate wins, and boost team motivation!</p>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showTab('dashboard')">Dashboard</button>
+            <button class="nav-tab" onclick="showTab('add-points')">Add Points</button>
+            <button class="nav-tab" onclick="showTab('leaderboard')">Leaderboard</button>
+            <button class="nav-tab" onclick="showTab('activities')">Activities</button>
+            <button class="nav-tab" onclick="showTab('manage')">Manage Team</button>
+        </div>
+
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content active">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalUsers">0</div>
+                    <div class="stat-label">Team Members</div>
+                </div>
+                <div class="stat-card gold">
+                    <div class="stat-number" id="totalPoints">0</div>
+                    <div class="stat-label">Total Points</div>
+                </div>
+                <div class="stat-card green">
+                    <div class="stat-number" id="totalActivities">0</div>
+                    <div class="stat-label">Recent Activities</div>
+                </div>
+                <div class="stat-card purple">
+                    <div class="stat-number" id="totalAchievements">0</div>
+                    <div class="stat-label">Achievements Unlocked</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>🎯 Quick Actions</h3>
+                <div class="quick-actions" style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 15px;">
+                    <button class="btn btn-primary" onclick="showTab('add-points')">Award Points</button>
+                    <button class="btn btn-success" onclick="openModal('recognitionModal')">Send Recognition</button>
+                    <button class="btn btn-primary" onclick="openModal('challengeModal')">Create Challenge</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>🏅 Recent Achievements</h3>
+                <div id="recentAchievements" class="achievement-grid">
+                    <p class="placeholder-text" style="grid-column: 1/-1;">No recent achievements to display</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Points Tab -->
+        <div id="add-points" class="tab-content">
+            <div class="card">
+                <h3>➕ Award Points to Team Member</h3>
+                <form id="pointsForm" onsubmit="awardPoints(event)">
+                    <div class="form-group">
+                        <label for="userSelect">Select Team Member</label>
+                        <select class="form-control" id="userSelect" required>
+                            <option value="">Choose team member...</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="activityType">Activity Type</label>
+                        <select class="form-control" id="activityType" onchange="updatePointsPreview()" required>
+                            <option value="">Select activity type...</option>
+                            <option value="code_commit" data-points="10">Code Commit (10 pts)</option>
+                            <option value="code_review" data-points="15">Code Review (15 pts)</option>
+                            <option value="bug_fix_critical" data-points="50">Critical Bug Fix (50 pts)</option>
+                            <option value="bug_fix_major" data-points="30">Major Bug Fix (30 pts)</option>
+                            <option value="bug_fix_minor" data-points="15">Minor Bug Fix (15 pts)</option>
+                            <option value="process_improvement" data-points="75">Process Improvement (75 pts)</option>
+                            <option value="knowledge_sharing" data-points="25">Knowledge Sharing (25 pts)</option>
+                            <option value="automation_script" data-points="40">Automation Script (40 pts)</option>
+                            <option value="mentor_session" data-points="35">Mentor Session (35 pts)</option>
+                            <option value="on_time_delivery" data-points="20">On-time Delivery (20 pts)</option>
+                            <option value="innovation_idea" data-points="60">Innovation Idea (60 pts)</option>
+                            <option value="cross_team_collab" data-points="25">Cross-team Collaboration (25 pts)</option>
+                            <option value="documentation" data-points="20">Documentation Update (20 pts)</option>
+                            <option value="custom">Custom Points</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="customPointsGroup" style="display: none;">
+                        <label for="customPoints">Custom Points</label>
+                        <input type="number" class="form-control" id="customPoints" min="1" max="500"> <!-- Max points for custom -->
+                    </div>
+
+                    <div class="form-group">
+                        <label for="activityDescription">Description</label>
+                        <textarea class="form-control" id="activityDescription" rows="3"
+                                  placeholder="Describe the achievement or task completed..." required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Points to Award: <span id="pointsPreview" style="color: #667eea; font-weight: bold;">0</span></label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Award Points</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Leaderboard Tab -->
+        <div id="leaderboard" class="tab-content">
+            <div class="leaderboard">
+                <div class="leaderboard-header">
+                    🏆 Team Leaderboard
+                </div>
+                <div id="leaderboardList">
+                    <div class="placeholder-text">
+                        <p>No team members added yet</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Activities Tab -->
+        <div id="activities" class="tab-content">
+            <div class="card">
+                <h3>📈 Recent Activities</h3>
+                <div class="activity-log" id="activityLog">
+                     <div class="placeholder-text">
+                        <p>No activities recorded yet</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Manage Team Tab -->
+        <div id="manage" class="tab-content">
+            <div class="card">
+                <h3>👥 Add Team Member</h3>
+                <form id="teamMemberForm" onsubmit="addTeamMember(event)">
+                    <div class="form-group">
+                        <label for="memberName">Name</label>
+                        <input type="text" class="form-control" id="memberName" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="memberTeam">Team</label>
+                        <input type="text" class="form-control" id="memberTeam" placeholder="e.g., Development, QA, DevOps" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="memberRole">Role</label>
+                        <input type="text" class="form-control" id="memberRole" placeholder="e.g., Senior Developer, Team Lead" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Add Team Member</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h3>👨‍💼 Team Members</h3>
+                <div id="teamMembersList">
+                     <div class="placeholder-text">
+                        <p>No team members added yet</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recognition Modal -->
+    <div id="recognitionModal" class="modal" onclick="closeModalOnClickOutside(event, 'recognitionModal')">
+        <div class="modal-content" onclick="event.stopPropagation();">
+            <div class="modal-header">
+                <span class="close-btn" onclick="closeModal('recognitionModal')">×</span>
+                <h2>🎉 Send Recognition</h2>
+            </div>
+            <form id="recognitionForm" onsubmit="sendRecognition(event)">
+                <div class="form-group">
+                    <label for="recognizeUser">Recognize Team Member</label>
+                    <select class="form-control" id="recognizeUser" required>
+                        <option value="">Choose team member...</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="recognitionCategory">Recognition Category</label>
+                    <select class="form-control" id="recognitionCategory" required>
+                        <option value="">Select category...</option>
+                        <option value="Helpful & Supportive">Helpful & Supportive</option>
+                        <option value="Innovative Thinking">Innovative Thinking</option>
+                        <option value="Great Collaboration">Great Collaboration</option>
+                        <option value="Leadership Skills">Leadership Skills</option>
+                        <option value="Quality Work">Quality Work</option>
+                        <option value="Problem Solving">Problem Solving</option>
+                        <option value="Going the Extra Mile">Going the Extra Mile</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="recognitionMessage">Recognition Message</label>
+                    <textarea class="form-control" id="recognitionMessage" rows="4"
+                              placeholder="Write a message explaining why you're recognizing this team member..." required></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-success">Send Recognition</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Challenge Modal -->
+    <div id="challengeModal" class="modal" onclick="closeModalOnClickOutside(event, 'challengeModal')">
+        <div class="modal-content" onclick="event.stopPropagation();">
+            <div class="modal-header">
+                <span class="close-btn" onclick="closeModal('challengeModal')">×</span>
+                <h2>🎯 Create Team Challenge</h2>
+            </div>
+            <form id="challengeForm" onsubmit="createChallenge(event)">
+                <div class="form-group">
+                    <label for="challengeName">Challenge Name</label>
+                    <input type="text" class="form-control" id="challengeName"
+                           placeholder="e.g., Bug Buster Challenge" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="challengeDescription">Description</label>
+                    <textarea class="form-control" id="challengeDescription" rows="3"
+                              placeholder="Describe the challenge and goals..." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="challengeDuration">Duration (days)</label>
+                    <input type="number" class="form-control" id="challengeDuration"
+                           min="1" max="90" value="30" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="challengeReward">Reward</label>
+                    <input type="text" class="form-control" id="challengeReward"
+                           placeholder="e.g., Extra day off, Team lunch" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Create Challenge</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notification Element -->
+    <div id="notification" class="notification"></div>
+
+    <script>
+        // Data storage - Currently using in-memory storage (data is lost on refresh/close)
+        // To make this persistent and shareable, you will need a backend.
+        let teamMembers = [];
+        let activities = [];
+        let recognitions = [];
+        let challenges = [];
+
+        // Achievement system
+        const achievementLevels = {
+            'Bronze': { min: 0, max: 500, icon: '🥉' },
+            'Silver': { min: 501, max: 1500, icon: '🥈' },
+            'Gold': { min: 1501, max: 3000, icon: '🥇' },
+            'Platinum': { min: 3001, max: 5000, icon: '💎' },
+            'Diamond': { min: 5001, max: Infinity, icon: '✨' }
+        };
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            // In a persistent version, you would load data from your backend here
+            updateDashboardStats();
+            populateUserSelects();
+            renderLeaderboard();
+            renderActivities();
+            renderTeamMembers();
+            renderRecentAchievements();
+             // Show the initial tab
+            const initialTabButton = document.querySelector('.nav-tab.active');
+             if(initialTabButton) {
+                 const tabName = initialTabButton.getAttribute('onclick').match(/showTab\('([^']*)'\)/)[1];
+                 showTab(tabName);
+             } else {
+                 showTab('dashboard'); // Default to dashboard if no active tab is set
+             }
+        });
+
+        // Tab navigation
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            document.getElementById(tabName).classList.add('active');
+
+            const targetButton = document.querySelector(`.nav-tab[onclick="showTab('${tabName}')"]`);
+            if (targetButton) {
+                 targetButton.classList.add('active');
+            }
+
+            // Re-render content when tabs are shown (important for dynamic lists)
+            if (tabName === 'leaderboard') {
+                 renderLeaderboard();
+            } else if (tabName === 'activities') {
+                 renderActivities();
+            } else if (tabName === 'manage') {
+                 renderTeamMembers();
+            } else if (tabName === 'dashboard') {
+                 updateDashboardStats();
+                 renderRecentAchievements();
+            }
+        }
+
+        // Calculate level based on points
+        function calculateLevel(points) {
+            for (const [level, range] of Object.entries(achievementLevels)) {
+                if (points >= range.min && points <= range.max) {
+                    return { level: level, icon: range.icon };
+                }
+            }
+             // Should not be reached with min: 0
+            return { level: 'Bronze', icon: achievementLevels['Bronze'].icon };
+        }
+
+        // Update points preview
+        function updatePointsPreview() {
+            const activityTypeSelect = document.getElementById('activityType');
+            const customPointsGroup = document.getElementById('customPointsGroup');
+            const pointsPreview = document.getElementById('pointsPreview');
+            const customPointsInput = document.getElementById('customPoints');
+
+            const selectedOption = activityTypeSelect.options[activityTypeSelect.selectedIndex];
+            const activityType = selectedOption.value;
+
+            if (activityType === 'custom') {
+                customPointsGroup.style.display = 'block';
+                pointsPreview.textContent = customPointsInput.value ? customPointsInput.value : '0';
+                 customPointsInput.setAttribute('required', 'required');
+            } else if (activityType) {
+                customPointsGroup.style.display = 'none';
+                const points = selectedOption.dataset.points || '0';
+                pointsPreview.textContent = points;
+                 customPointsInput.removeAttribute('required');
+                 customPointsInput.value = '';
+            } else {
+                customPointsGroup.style.display = 'none';
+                pointsPreview.textContent = '0';
+                 customPointsInput.removeAttribute('required');
+                 customPointsInput.value = '';
+            }
+        }
+
+        // Update custom points preview on input change
+        document.getElementById('customPoints')?.addEventListener('input', function() {
+            document.getElementById('pointsPreview').textContent = this.value || '0';
+        });
+
+        // Add team member
+        function addTeamMember(event) {
+            event.preventDefault();
+
+            const nameInput = document.getElementById('memberName');
+            const teamInput = document.getElementById('memberTeam');
+            const roleInput = document.getElementById('memberRole');
+
+            const name = nameInput.value.trim();
+            const team = teamInput.value.trim();
+            const role = roleInput.value.trim();
+
+            if (!name || !team || !role) {
+                showNotification('Please fill all fields', 'error');
+                return;
+            }
+
+            if (teamMembers.some(member => member.name.toLowerCase() === name.toLowerCase())) {
+                showNotification(`Team member "${name}" already exists`, 'error');
+                return;
+            }
+
+            const newMember = {
+                id: Date.now().toString(),
+                name: name,
+                team: team,
+                role: role,
+                points: 0,
+                level: calculateLevel(0).level,
+                achievementsUnlocked: {},
+                joinDate: new Date().toISOString()
+            };
+
+            teamMembers.push(newMember);
+
+            // In a persistent version, you would send this new member data to your backend here
+            // Example (pseudo-code): saveMember(newMember).then(() => { ... update UI ... });
+
+            document.getElementById('teamMemberForm').reset();
+
+            populateUserSelects();
+            renderTeamMembers();
+            updateDashboardStats();
+
+            showNotification(`${name} added to the team!`, 'success');
+        }
+
+        // Award points
+        function awardPoints(event) {
+            event.preventDefault();
+
+            const userSelect = document.getElementById('userSelect');
+            const activityTypeSelect = document.getElementById('activityType');
+            const descriptionInput = document.getElementById('activityDescription');
+            const customPointsInput = document.getElementById('customPoints');
+
+            const userId = userSelect.value;
+            const activityType = activityTypeSelect.value;
+            const description = descriptionInput.value.trim();
+
+            if (!userId || !activityType || !description) {
+                showNotification('Please fill all required fields', 'error');
+                return;
+            }
+
+            let points = 0;
+            if (activityType === 'custom') {
+                points = parseInt(customPointsInput.value) || 0;
+                if (points <= 0) {
+                    showNotification('Please enter valid custom points', 'error');
+                    return;
+                }
+                 if (points > 500) {
+                     showNotification('Maximum custom points is 500', 'error');
+                     return;
+                 }
+            } else {
+                const option = activityTypeSelect.options[activityTypeSelect.selectedIndex];
+                points = parseInt(option.dataset.points);
+            }
+
+            const user = teamMembers.find(member => member.id === userId);
+            if (!user) {
+                showNotification('User not found', 'error');
+                return;
+            }
+
+            const oldLevel = user.level;
+            user.points += points;
+            const newLevelInfo = calculateLevel(user.points);
+            user.level = newLevelInfo.level;
+
+            const activity = {
+                id: Date.now().toString() + '_act',
+                userId: userId,
+                userName: user.name,
+                type: activityType === 'custom' ? `Custom (${points} pts)` : activityTypeSelect.options[activityTypeSelect.selectedIndex].text.split('(')[0].trim(),
+                description: description,
+                points: points,
+                date: new Date().toISOString()
+            };
+
+            activities.unshift(activity);
+
+            // In a persistent version, you would send the updated user data and new activity to your backend
+            // Example (pseudo-code): saveUser(user); saveActivity(activity); then({ ... update UI ... });
+
+            checkAchievements(user, oldLevel); // Checks and potentially adds achievement activity
+
+            document.getElementById('pointsForm').reset();
+            updatePointsPreview();
+
+            updateDashboardStats();
+            renderLeaderboard();
+            renderActivities();
+            renderRecentAchievements();
+
+            showNotification(`Awarded ${points} points to ${user.name}!`, 'success');
+        }
+
+        // Check for and award achievements
+        function checkAchievements(user, oldLevel) {
+            const currentLevel = user.level;
+            const achievementMessages = [];
+
+            const levelOrder = Object.keys(achievementLevels);
+            const oldLevelIndex = levelOrder.indexOf(oldLevel);
+            const currentLevelIndex = levelOrder.indexOf(currentLevel);
+
+            if (currentLevelIndex > oldLevelIndex) {
+                for (let i = oldLevelIndex + 1; i <= currentLevelIndex; i++) {
+                    const unlockedLevelName = levelOrder[i];
+                    const unlockedLevelInfo = achievementLevels[unlockedLevelName];
+
+                    if (!user.achievementsUnlocked[unlockedLevelName]) {
+                        const achievementActivity = {
+                            id: Date.now().toString() + '_' + unlockedLevelName + '_ach_act', // Unique ID
+                            userId: user.id,
+                            userName: user.name,
+                            type: 'Achievement Unlocked',
+                            name: `${unlockedLevelName} Level Reached!`,
+                            description: `Achieved the ${unlockedLevelName} level with ${user.points} points.`,
+                            icon: unlockedLevelInfo.icon,
+                            date: new Date().toISOString(),
+                            isAchievement: true
+                        };
+                         // Add to user's state (for tracking)
+                        user.achievementsUnlocked[unlockedLevelName] = true;
+                        // Add to the activities list (for display in log/recent)
+                        activities.unshift(achievementActivity);
+
+                        // In a persistent version, you would save the updated user (with new achievementUnlocked)
+                        // and save the new achievementActivity to your backend.
+
+                        achievementMessages.push(`${user.name} reached the ${unlockedLevelName} level!`);
+                    }
+                }
+                if (achievementMessages.length > 0) {
+                     showNotification(achievementMessages.join(' and '), 'success');
+                }
+                 // Update dashboard stats and achievement list after checking all levels
+                 updateDashboardStats();
+                 renderRecentAchievements();
+            } else if (currentLevelIndex === oldLevelIndex && currentLevel === 'Bronze' && user.points > 0 && !user.achievementsUnlocked['Bronze']) {
+                 // Special case for the very first point(s) unlocking Bronze
+                const unlockedLevelName = 'Bronze';
+                const unlockedLevelInfo = achievementLevels[unlockedLevelName];
+                 const achievementActivity = {
+                    id: Date.now().toString() + '_' + unlockedLevelName + '_ach_act',
+                    userId: user.id,
+                    userName: user.name,
+                    type: 'Achievement Unlocked',
+                    name: `${unlockedLevelName} Level Reached!`,
+                    description: `Earned your first points and reached the ${unlockedLevelName} level.`,
+                    icon: unlockedLevelInfo.icon,
+                    date: new Date().toISOString(),
+                    isAchievement: true
+                };
+                user.achievementsUnlocked[unlockedLevelName] = true;
+                activities.unshift(achievementActivity);
+
+                 // In a persistent version, save updated user and new achievement activity.
+
+                showNotification(`${user.name} reached the ${unlockedLevelName} level!`, 'success');
+                updateDashboardStats();
+                renderRecentAchievements();
+            }
+        }
+
+
+        // Populate user select dropdowns
+        function populateUserSelects() {
+            const userSelect = document.getElementById('userSelect');
+            const recognizeUserSelect = document.getElementById('recognizeUser');
+
+            userSelect.innerHTML = '<option value="">Choose team member...</option>';
+            recognizeUserSelect.innerHTML = '<option value="">Choose team member...</option>';
+
+            const sortedMembers = [...teamMembers].sort((a, b) => a.name.localeCompare(b.name));
+
+            sortedMembers.forEach(member => {
+                const option1 = document.createElement('option');
+                option1.value = member.id;
+                option1.textContent = member.name;
+                userSelect.appendChild(option1);
+
+                const option2 = document.createElement('option');
+                option2.value = member.id;
+                option2.textContent = member.name;
+                recognizeUserSelect.appendChild(option2);
+            });
+        }
+
+        // Render Leaderboard
+        function renderLeaderboard() {
+            const leaderboardList = document.getElementById('leaderboardList');
+            leaderboardList.innerHTML = '';
+
+            if (teamMembers.length === 0) {
+                 leaderboardList.innerHTML = '<div class="placeholder-text"><p>No team members added yet</p></div>';
+                 return;
+            }
+
+            const sortedMembers = [...teamMembers].sort((a, b) => b.points - a.points);
+
+            sortedMembers.forEach((member, index) => {
+                const rank = index + 1;
+                let rankClass = '';
+                if (rank === 1) rankClass = 'gold';
+                else if (rank === 2) rankClass = 'silver';
+                else if (rank === 3) rankClass = 'bronze';
+
+                 const levelInfo = calculateLevel(member.points);
+
+                const itemHtml = `
+                    <div class="leaderboard-item">
+                        <div class="rank ${rankClass}">${rank}</div>
+                        <div class="user-info">
+                            <div class="user-name">${member.name} <span class="level-badge level-${member.level}">${levelInfo.icon} ${member.level}</span></div>
+                            <div class="user-team">${member.team} - ${member.role}</div>
+                        </div>
+                        <div class="user-points">${member.points} pts</div>
+                    </div>
+                `;
+                leaderboardList.innerHTML += itemHtml;
+            });
+        }
+
+        // Render Recent Activities
+        function renderActivities() {
+            const activityLog = document.getElementById('activityLog');
+            activityLog.innerHTML = '';
+
+             if (activities.length === 0) {
+                 activityLog.innerHTML = '<div class="placeholder-text"><p>No activities recorded yet</p></div>';
+                 return;
+             }
+
+            const sortedActivities = [...activities].sort((a, b) => new Date(b.date) - new Date(a.date));
+            const recentActivities = sortedActivities.slice(0, 50);
+
+            recentActivities.forEach(activity => {
+                const date = new Date(activity.date).toLocaleString();
+
+                let pointsDisplay = activity.points > 0 ? `+${activity.points} pts` : '';
+                let activityIcon = '';
+                let activityClass = '';
+                let activityTitle = `${activity.userName} - ${activity.type}`;
+
+                if(activity.isAchievement) {
+                    pointsDisplay = '';
+                    activityIcon = activity.icon + ' ';
+                    activityClass = 'achievement-activity';
+                    activityTitle = `${activityIcon}${activity.userName} - ${activity.name}`; // Use achievement name for title
+                } else if (activity.isRecognition) {
+                     activityIcon = '👏 '; // Example icon for recognition
+                     activityClass = 'recognition-activity';
+                     activityTitle = `${activityIcon}${activity.userName} recognized!`; // Custom title for recognition
+                     pointsDisplay = ''; // Recognitions don't show point gain here
+                }
+
+
+                const itemHtml = `
+                    <div class="activity-item ${activityClass}">
+                        <div class="activity-info">
+                            <div class="activity-title">${activityTitle}</div>
+                            <div class="activity-meta">${activity.description} - ${date}</div>
+                        </div>
+                        <div class="activity-points">${pointsDisplay}</div>
+                    </div>
+                `;
+                activityLog.innerHTML += itemHtml;
+            });
+        }
+
+        // Render Recent Achievements
+        function renderRecentAchievements() {
+            const recentAchievementsDiv = document.getElementById('recentAchievements');
+            recentAchievementsDiv.innerHTML = '';
+
+            const achievementActivities = activities.filter(activity => activity.isAchievement);
+
+             if (achievementActivities.length === 0) {
+                 recentAchievementsDiv.innerHTML = '<p class="placeholder-text" style="grid-column: 1/-1;">No recent achievements to display</p>';
+                 return;
+             }
+
+            const sortedAchievements = [...achievementActivities].sort((a, b) => new Date(b.date) - new Date(a.date));
+            const achievementsToDisplay = sortedAchievements.slice(0, 8);
+
+            achievementsToDisplay.forEach(ach => {
+                const cardHtml = `
+                    <div class="achievement-card">
+                        <div class="achievement-icon">${ach.icon}</div>
+                        <div class="achievement-name">${ach.name}</div>
+                        <div class="achievement-desc">${ach.userName} - ${new Date(ach.date).toLocaleDateString()}</div>
+                    </div>
+                `;
+                recentAchievementsDiv.innerHTML += cardHtml;
+            });
+        }
+
+
+        // Render Team Members list
+        function renderTeamMembers() {
+            const teamMembersList = document.getElementById('teamMembersList');
+            teamMembersList.innerHTML = '';
+
+             if (teamMembers.length === 0) {
+                 teamMembersList.innerHTML = '<div class="placeholder-text"><p>No team members added yet</p></div>';
+                 return;
+             }
+
+            const sortedMembers = [...teamMembers].sort((a, b) => a.name.localeCompare(b.name));
+
+            sortedMembers.forEach(member => {
+                 const levelInfo = calculateLevel(member.points);
+                const itemHtml = `
+                    <div class="team-member-item">
+                        <div class="member-info">
+                            <h4>${member.name} <span class="level-badge level-${member.level}">${levelInfo.icon} ${member.level}</span></h4>
+                            <div class="member-details">${member.role} - ${member.team}</div>
+                        </div>
+                        <div class="member-stats">
+                            <div class="member-points">${member.points} pts</div>
+                            <div class="member-details">Joined: ${new Date(member.joinDate).toLocaleDateString()}</div>
+                        </div>
+                    </div>
+                `;
+                teamMembersList.innerHTML += itemHtml;
+            });
+        }
+
+        // Update Dashboard Stats
+        function updateDashboardStats() {
+            document.getElementById('totalUsers').textContent = teamMembers.length;
+
+            const totalPoints = teamMembers.reduce((sum, member) => sum + member.points, 0);
+            document.getElementById('totalPoints').textContent = totalPoints;
+
+             const thirtyDaysAgo = new Date();
+             thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+             const recentActivitiesCount = activities.filter(activity => new Date(activity.date) >= thirtyDaysAgo).length;
+             document.getElementById('totalActivities').textContent = recentActivitiesCount;
+
+            let totalAchievementsCount = 0;
+            teamMembers.forEach(member => {
+                for (const level in member.achievementsUnlocked) {
+                    if (member.achievementsUnlocked[level]) {
+                        totalAchievementsCount++;
+                    }
+                }
+            });
+            document.getElementById('totalAchievements').textContent = totalAchievementsCount;
+        }
+
+        // Modal functions
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+             if (modalId === 'recognitionModal') {
+                 populateUserSelects(); // Ensure user list is fresh
+             }
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+             if (modalId === 'recognitionModal') {
+                 document.getElementById('recognitionForm').reset();
+             } else if (modalId === 'challengeModal') {
+                 document.getElementById('challengeForm').reset();
+             }
+        }
+
+        function closeModalOnClickOutside(event, modalId) {
+            if (event.target.id === modalId) {
+                closeModal(modalId);
+            }
+        }
+
+
+        // Send Recognition
+        function sendRecognition(event) {
+            event.preventDefault();
+
+            const recognizeUserSelect = document.getElementById('recognizeUser');
+            const categoryInput = document.getElementById('recognitionCategory');
+            const messageInput = document.getElementById('recognitionMessage');
+
+            const userId = recognizeUserSelect.value;
+            const category = categoryInput.value.trim();
+            const message = messageInput.value.trim();
+
+            if (!userId || !category || !message) {
+                showNotification('Please fill all recognition fields', 'error');
+                return;
+            }
+
+             const user = teamMembers.find(member => member.id === userId);
+             if (!user) {
+                 showNotification('User not found for recognition', 'error');
+                 return;
+             }
+
+            const recognition = {
+                id: Date.now().toString() + '_rec',
+                userId: userId,
+                userName: user.name,
+                category: category,
+                message: message,
+                date: new Date().toISOString()
+            };
+
+            recognitions.unshift(recognition);
+
+             activities.unshift({
+                id: recognition.id + '_act',
+                userId: recognition.userId,
+                userName: recognition.userName,
+                type: `Recognition: ${recognition.category}`, // More specific type for log
+                description: recognition.message,
+                points: 0,
+                date: recognition.date,
+                isRecognition: true
+            });
+
+             // In a persistent version, you would save the recognition and the activity to your backend
+
+            closeModal('recognitionModal');
+            document.getElementById('recognitionForm').reset();
+            renderActivities();
+
+            showNotification(`Recognition sent to ${user.name} for ${category}!`, 'success');
+        }
+
+        // Create Challenge
+        function createChallenge(event) {
+            event.preventDefault();
+
+            const nameInput = document.getElementById('challengeName');
+            const descriptionInput = document.getElementById('challengeDescription');
+            const durationInput = document.getElementById('challengeDuration');
+            const rewardInput = document.getElementById('challengeReward');
+
+            const name = nameInput.value.trim();
+            const description = descriptionInput.value.trim();
+            const duration = parseInt(durationInput.value) || 0;
+            const reward = rewardInput.value.trim();
+
+             if (!name || !description || duration <= 0 || !reward) {
+                showNotification('Please fill all challenge fields correctly', 'error');
+                return;
+            }
+
+            const challenge = {
+                id: Date.now().toString() + '_chall',
+                name: name,
+                description: description,
+                duration: duration, // Duration in days
+                reward: reward,
+                startDate: new Date().toISOString(),
+                endDate: new Date(Date.now() + duration * 24 * 60 * 60 * 1000).toISOString(), // Calculate end date
+                isActive: true,
+                 participants: [] // You might want to track participants
+                 // In a real app, you'd add logic to track progress towards the challenge
+            };
+
+            challenges.push(challenge);
+
+             // In a persistent version, you would save the challenge to your backend
+
+            closeModal('challengeModal');
+            document.getElementById('challengeForm').reset();
+
+             // Optionally add an activity log entry for challenge creation
+             activities.unshift({
+                id: challenge.id + '_act_created',
+                userId: null, // Or the user who created it
+                userName: 'Admin', // Or the user's name
+                type: 'Challenge Created',
+                description: `"${challenge.name}" started! Reward: ${challenge.reward}. Duration: ${challenge.duration} days.`,
+                points: 0,
+                date: new Date().toISOString(),
+                isChallenge: true // Mark as challenge event
+            });
+             renderActivities();
+
+
+            showNotification(`Challenge "${name}" created successfully!`, 'success');
+
+             // You would need additional UI/logic to display active challenges and mark them as completed
+        }
+
+
+        // Show Notification
+        function showNotification(message, type = 'success') {
+            const notificationElement = document.getElementById('notification');
+            notificationElement.textContent = message;
+            notificationElement.className = `notification ${type}`;
+            notificationElement.classList.add('show');
+
+            setTimeout(() => {
+                notificationElement.classList.remove('show');
+            }, 3000);
+        }
+
+    </script>
+</body>
+</html>
